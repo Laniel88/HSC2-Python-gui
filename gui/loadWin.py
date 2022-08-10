@@ -1,35 +1,27 @@
 import os
 import sys
 
-sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
-
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui     import *   
 from PyQt5.QtCore    import *
 from PyQt5           import uic, QtTest
 
-# def resource_path(relative_path):
-#     """ Get absolute path to resource, works for dev and for PyInstaller """
-#     base_path = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
-#     return os.path.join(base_path, relative_path)
+sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 
-def resource_path(relative_path):
-    """ Used for developing"""
-    return os.path.dirname(os.path.abspath(os.path.dirname(__file__)))+'/res/'+relative_path
+from web.webScroll import getAllreList
+from setup import resource_path
 
 QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)     #enable highdpi scaling
 QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps,    True)        #use highdpi icons
 
 from_class = uic.loadUiType(resource_path('layouts/loadWin.ui'))[0]
 
-# class Worker(QThread):
-#     finished = pyqtSignal(tuple)
-#     def run(self):
-#         self.mainWin = MainWindowSeq()
-#         menuTu = self.mainWin.scrollDIC()
-#         self.finished.emit(menuTu)
+class WebWorker(QThread):
+    finished = pyqtSignal(tuple)
+    def run(self):
+        self.finished.emit(getAllreList())
 
-class loadWin(QMainWindow, from_class) :
+class LoadWin(QMainWindow, from_class) :
     
     def __init__(self, Qapp) :
         super().__init__()
@@ -40,7 +32,10 @@ class loadWin(QMainWindow, from_class) :
         self.backgroundImg()
         self.loadGif()
         self.show()
-        self.exitLoad()
+
+        self.worker = WebWorker(Qapp)
+        self.worker.finished.connect(self.connect_mainWin)
+        self.worker.start()
     
     def initUI(self):
         self.setupUi(self) 
@@ -56,7 +51,7 @@ class loadWin(QMainWindow, from_class) :
         self.move(qr.topLeft())
 
     def backgroundImg(self):
-        qPixmapVar = QPixmap()      #Create QPixmap object
+        qPixmapVar = QPixmap()
         qPixmapVar.load(resource_path('img/loadMain.png'))
         qPixmapVar = qPixmapVar.scaledToWidth(540)
         self.loadMain.setPixmap(qPixmapVar)
@@ -70,29 +65,34 @@ class loadWin(QMainWindow, from_class) :
 
 
 
-    def exitLoad(self):
+    def exitLoad(self,title = 'Nothing to Load',text='All cafeteria is closed'):
         QtTest.QTest.qWait(1000) #delete this
-        result = self.exitMsgBox()
+        result = self.exitMsgBox(title,text)
         if result == QMessageBox.Yes:
             print('yes')
             sys.exit(self.app.exit())
 
-    def exitMsgBox(self):
+    def exitMsgBox(self,title,text):
         msgBox = QMessageBox()
         msgBox.setWindowTitle('HSC2 :: Exit')
         msgBox.setWindowIcon(QIcon(resource_path('img/ICON.png')))
         msgBox.setIcon(QMessageBox.Information)
-        msgBox.setText('Nothing to Load')
-        msgBox.setInformativeText('All cafeteria is closed')
+        msgBox.setText(title)
+        msgBox.setInformativeText(text)
         msgBox.setStandardButtons(QMessageBox.Yes | QMessageBox.Ignore)
         msgBox.setDefaultButton(QMessageBox.Yes)
         return msgBox.exec_()
-    
- 
 
-
-
+    @pyqtSlot(tuple)
+    def connect_mainWin(self,reInfo):
+        if reInfo[1] == (0,0,0):
+            self.exitLoad()
+        elif reInfo[0] == 'WEB ERROR':
+            self.exitLoad("[HSC2] ERROR",'WEB ERROR\n(ERR CONTENT) ' + reInfo[1])
+        else:
+            print("temp")
+        
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    aW = loadWin()
-    app.exec_()
+    aW = LoadWin(app)
+    app.exec_() 
