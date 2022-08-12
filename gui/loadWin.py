@@ -9,7 +9,7 @@ from PyQt5 import uic, QtTest
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 
 from web.webScroll import getAllreList
-from setup import resource_path
+from setup import resource_path,exitMsgBox
 from gui.mainWin import MainWin
 
 form_class = uic.loadUiType(resource_path('layouts/loadWin.ui'))[0]
@@ -65,25 +65,13 @@ class LoadWin(QMainWindow, form_class):
         movie.start()
 
     def exitLoad(self, title='Nothing to Load', text='All cafeteria is closed'):
-        QtTest.QTest.qWait(1000)  # delete this
-        result = self.exitMsgBox(title, text)
+        result = exitMsgBox(title, text)
         if result == QMessageBox.Yes:
             print('yes')
             sys.exit(self.app.exit())
         else:
-            self.mainWinObj = MainWin((False, False))
-            self.mainWinObj.show()
-
-    def exitMsgBox(self, title, text):
-        msgBox = QMessageBox()
-        msgBox.setWindowTitle('HSC2 :: Exit')
-        msgBox.setWindowIcon(QIcon(resource_path('img/ICON.png')))
-        msgBox.setIcon(QMessageBox.Information)
-        msgBox.setText(title)
-        msgBox.setInformativeText(text)
-        msgBox.setStandardButtons(QMessageBox.Yes | QMessageBox.Ignore)
-        msgBox.setDefaultButton(QMessageBox.Yes)
-        return msgBox.exec_()
+            self.close()
+            self.mainWinObj = MainWin(self.app,(False, False))
 
     @pyqtSlot(tuple)
     def connect_mainWin(self, reInfo):
@@ -94,8 +82,7 @@ class LoadWin(QMainWindow, form_class):
                           'WEB ERROR\n(ERR CONTENT) ' + reInfo[1])
         else:
             self.close()
-            self.mainWinObj = MainWin(reInfo)
-            self.mainWinObj.show()
+            self.mainWinObj = MainWin(self.app, reInfo)
 
 
 if __name__ == "__main__":
