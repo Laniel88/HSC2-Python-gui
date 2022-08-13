@@ -1,5 +1,7 @@
-from PyQt5.QtWidgets import QMessageBox
-from PyQt5.QtGui import QIcon
+from PyQt5.QtWidgets import QMessageBox, QGraphicsOpacityEffect
+from PyQt5.QtGui import QIcon, QMovie
+from PyQt5.QtCore import QPropertyAnimation, QByteArray, QSize
+
 
 # def resource_path(relative_path):
 #     """ Get absolute path to resource, works for dev and for PyInstaller """
@@ -30,5 +32,36 @@ def exitMsgBox(title, text, buttons=QMessageBox.Yes | QMessageBox.Ignore):
     msgBox.setDefaultButton(QMessageBox.Yes)
     return msgBox.exec_()
 
+
 def setUpMenuGroup():
     print("fill up!")
+
+
+class Animation():
+    # fading animation
+    def fade(self, widget, duration=1000):
+        self.effect = QGraphicsOpacityEffect()
+        widget.setGraphicsEffect(self.effect)
+
+        self.animation = QPropertyAnimation(self.effect, b"opacity")
+        self.animation.setDuration(duration)
+        self.animation.setStartValue(1)
+        self.animation.setEndValue(0)
+        self.animation.start()
+
+    def unfade(self, widget, duration=1000):
+        self.effect = QGraphicsOpacityEffect()
+        widget.setGraphicsEffect(self.effect)
+
+        self.animation = QPropertyAnimation(self.effect, b"opacity")
+        self.animation.setDuration(duration)
+        self.animation.setStartValue(0)
+        self.animation.setEndValue(1)
+        self.animation.start()
+
+    def gifStart(self, path, size, object):
+        movie = QMovie(resource_path(path), QByteArray(), self)
+        movie.setCacheMode(QMovie.CacheAll)
+        movie.setScaledSize(size)
+        object.setMovie(movie)
+        movie.start()

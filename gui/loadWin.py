@@ -9,7 +9,7 @@ from PyQt5 import uic, QtTest
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 
 from web.webScroll import getAllreList
-from setup import resource_path,exitMsgBox
+from setup import resource_path, exitMsgBox
 from gui.mainWin import MainWin
 
 form_class = uic.loadUiType(resource_path('layouts/loadWin.ui'))[0]
@@ -71,7 +71,7 @@ class LoadWin(QMainWindow, form_class):
             sys.exit(self.app.exit())
         else:
             self.close()
-            self.mainWinObj = MainWin(self.app,(False, False))
+            self.mainWinObj = MainWin(self.app, (False, False))
 
     @pyqtSlot(tuple)
     def connect_mainWin(self, reInfo):

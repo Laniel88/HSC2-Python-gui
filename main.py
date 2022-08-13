@@ -7,10 +7,8 @@ from gui.loadWin import LoadWin
 
 if __name__ == "__main__":
 
-    QApplication.setAttribute(Qt.AA_EnableHighDpiScaling,
-                              True)
-    QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps,
-                              True)
+    QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
+    QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps, True)
 
     ctx = ssl.SSLContext(protocol=ssl.PROTOCOL_SSLv23)
     ctx.set_ciphers('SSLv3')
