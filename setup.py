@@ -1,7 +1,7 @@
-from PyQt5.QtWidgets import QMessageBox, QGraphicsOpacityEffect
-from PyQt5.QtGui import QIcon, QMovie
-from PyQt5.QtCore import QPropertyAnimation, QByteArray, QSize
-
+from PyQt5.QtWidgets import QMessageBox, QGraphicsOpacityEffect, QLabel, QVBoxLayout, QWidget
+from PyQt5.QtGui import QIcon, QMovie, QFont, QFontDatabase, QPixmap, QBrush, QImage, QPainter, QPixmap, QWindow
+from PyQt5.QtCore import QPropertyAnimation, QByteArray, Qt, QRect
+from PyQt5.QtTest import QTest
 
 # def resource_path(relative_path):
 #     """ Get absolute path to resource, works for dev and for PyInstaller """
@@ -37,7 +37,7 @@ def setUpMenuGroup():
     print("fill up!")
 
 
-class Animation():
+class Graphics():
     # fading animation
     def fade(self, widget, duration=1000):
         self.effect = QGraphicsOpacityEffect()
@@ -65,3 +65,48 @@ class Animation():
         movie.setScaledSize(size)
         object.setMovie(movie)
         movie.start()
+
+    def mainLoadAnimation(self):
+        print("fillOut")
+
+    def setImg(self, imgPath, object, Width):
+        qPixmapVar = QPixmap()
+        qPixmapVar.load(resource_path(imgPath))
+        qPixmapVar = qPixmapVar.scaledToWidth(Width)
+        object.setPixmap(qPixmapVar)
+
+    def mask_image(self, imgdata, imgtype='png'):
+
+        image = QImage.fromData(imgdata, imgtype)
+        image.convertToFormat(QImage.Format_ARGB32)
+        image = image.copy()
+
+        out_img = QImage(image.width(), image.height(), QImage.Format_ARGB32)
+        out_img.fill(Qt.transparent)
+
+        brush = QBrush(image)
+        painter = QPainter(out_img)
+        painter.setBrush(brush)      # Use the image texture brush
+        painter.setPen(Qt.NoPen)     # Don't draw an outline  # Use AA
+        painter.drawRoundedRect(0, 0,
+                                image.width(), image.height(),
+                                60, 60)
+        painter.drawRect(0, 60, image.width(), image.height())
+        painter.setRenderHint(QPainter.Antialiasing, True)
+        painter.end()
+
+        pr = QWindow().devicePixelRatio()
+        pm = QPixmap.fromImage(out_img)
+        pm.setDevicePixelRatio(pr)
+
+        pm = pm.scaled(QWindow().devicePixelRatio() * 210, QWindow().devicePixelRatio() * 150,
+                       Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        return pm
+
+
+class Font():
+    def addFontWithPixel(self, pixel, font="D2Coding"):
+        QFontDatabase.addApplicationFont(resource_path('fonts/D2Coding.ttf'))
+        font = QFont(font)
+        font.setPixelSize(pixel)
+        return font
