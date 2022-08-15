@@ -34,7 +34,7 @@ class LoadWin(QMainWindow, form_class):
         self.loadGif()
         self.show()
 
-        self.worker = WebWorker(Qapp)
+        self.worker = WebWorker()
         self.worker.finished.connect(self.connect_mainWin)
         self.worker.start()
 

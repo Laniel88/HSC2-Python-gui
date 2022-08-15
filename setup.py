@@ -1,7 +1,6 @@
-from PyQt5.QtWidgets import QMessageBox, QGraphicsOpacityEffect, QLabel, QVBoxLayout, QWidget
+from PyQt5.QtWidgets import QMessageBox, QGraphicsOpacityEffect
 from PyQt5.QtGui import QIcon, QMovie, QFont, QFontDatabase, QPixmap, QBrush, QImage, QPainter, QPixmap, QWindow
-from PyQt5.QtCore import QPropertyAnimation, QByteArray, Qt, QRect
-from PyQt5.QtTest import QTest
+from PyQt5.QtCore import QPropertyAnimation, QByteArray, Qt
 
 # def resource_path(relative_path):
 #     """ Get absolute path to resource, works for dev and for PyInstaller """
@@ -67,7 +66,7 @@ class Graphics():
         movie.start()
 
     def mainLoadAnimation(self):
-        print("fillOut")
+        self.unfade(self.mainGroup)
 
     def setImg(self, imgPath, object, Width):
         qPixmapVar = QPixmap()
@@ -79,19 +78,22 @@ class Graphics():
 
         image = QImage.fromData(imgdata, imgtype)
         image.convertToFormat(QImage.Format_ARGB32)
-        image = image.copy()
 
         out_img = QImage(image.width(), image.height(), QImage.Format_ARGB32)
         out_img.fill(Qt.transparent)
+
+        radius = int((image.width() / 201) * 15)
 
         brush = QBrush(image)
         painter = QPainter(out_img)
         painter.setBrush(brush)      # Use the image texture brush
         painter.setPen(Qt.NoPen)     # Don't draw an outline  # Use AA
+
         painter.drawRoundedRect(0, 0,
                                 image.width(), image.height(),
-                                60, 60)
-        painter.drawRect(0, 60, image.width(), image.height())
+                                radius, radius)
+
+        painter.drawRect(0, radius, image.width(), image.height())
         painter.setRenderHint(QPainter.Antialiasing, True)
         painter.end()
 
@@ -99,14 +101,25 @@ class Graphics():
         pm = QPixmap.fromImage(out_img)
         pm.setDevicePixelRatio(pr)
 
-        pm = pm.scaled(QWindow().devicePixelRatio() * 210, QWindow().devicePixelRatio() * 150,
+        pm = pm.scaled(QWindow().devicePixelRatio() * 201, QWindow().devicePixelRatio() * 150,
                        Qt.KeepAspectRatio, Qt.SmoothTransformation)
         return pm
 
 
 class Font():
-    def addFontWithPixel(self, pixel, font="D2Coding"):
+    def addFontDatabase(self):
         QFontDatabase.addApplicationFont(resource_path('fonts/D2Coding.ttf'))
+        QFontDatabase.addApplicationFont(
+            resource_path('fonts/NotoSansKR-Bold.otf'))
+        QFontDatabase.addApplicationFont(
+            resource_path('fonts/NotoSansKR-Medium.otf'))
+        QFontDatabase.addApplicationFont(
+            resource_path('fonts/NotoSansKR-Regular.otf'))
+
+    def addFontWithPixel(self, pixel, font="D2Coding", bold=False):
         font = QFont(font)
         font.setPixelSize(pixel)
+        if bold == True:
+            font.setBold(True)
+        font.setHintingPreference(QFont.PreferNoHinting)
         return font
