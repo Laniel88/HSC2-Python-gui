@@ -1,8 +1,12 @@
-from asyncio.windows_events import NULL
-from urllib import request
+import os
+import sys
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
+
+sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
+
+from setup import resource_path, getRequestsInfinite
 
 
 class MainGroupClass():
@@ -14,8 +18,13 @@ class MainGroupClass():
         listOfMenuGroup[0].show()
 
         # settings of menuImage
-        img = request.urlopen(menuData[0]).read()
-        listOfMenuGroup[3].setPixmap(self.mask_image(img, 'jpeg'))
+        if menuData[0] == 'https://www.hanyang.ac.kr/html-repositories/images/custom/food/no-img.jpg':
+            img = open(resource_path('img/noImage.png'), 'rb').read()
+            listOfMenuGroup[3].setPixmap(self.mask_image(img, 'png'))
+        else:
+            #img = request.urlopen(menuData[0]).read()
+            img = getRequestsInfinite(menuData[0]).read()
+            listOfMenuGroup[3].setPixmap(self.mask_image(img, 'jpeg'))
 
         # set titleLabelA
         listOfMenuGroup[1].setText(self.reLabel[labelIndex])
@@ -26,11 +35,11 @@ class MainGroupClass():
 
         # move titlelabelB
         if labelIndex == 0:
-            listOfMenuGroup[2].move(97, 158)
+            listOfMenuGroup[2].move(97, 153)
         elif labelIndex == 1:
-            listOfMenuGroup[2].move(110, 158)
+            listOfMenuGroup[2].move(110, 153)
         else:
-            listOfMenuGroup[2].move(130, 158)
+            listOfMenuGroup[2].move(130, 153)
 
         # set titleLabelB if it exists
         if menuData[1][0] != False:
@@ -44,7 +53,7 @@ class MainGroupClass():
             menuText += menuData[1][i] + '\n'
         listOfMenuGroup[4].setText(menuText)
         listOfMenuGroup[4].setFont(
-            self.addFontWithPixel(13, 'Noto Sans KR Medium'))
+            self.addFontWithPixel(12, 'Noto Sans KR Medium'))
 
         # load priceLabel
         listOfMenuGroup[5].setText(menuData[2])
@@ -58,7 +67,7 @@ class MainGroupClass():
             for menu in self.reList[reNum]:
                 if tag in menu[3]:
                     self.loadMenuGroup(
-                        reNum, self.reList[0][0], self.lomg_tup[cnt]
+                        reNum, menu, self.lomg_tup[cnt]
                     )
                     cnt += 1
         return cnt
@@ -90,4 +99,3 @@ class MainGroupClass():
             group.hide()
         self.refreshGif.hide()
         self.refreshLabel.hide()
-

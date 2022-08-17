@@ -1,3 +1,4 @@
+from urllib import request
 from PyQt5.QtWidgets import QMessageBox, QGraphicsOpacityEffect
 from PyQt5.QtGui import QIcon, QMovie, QFont, QFontDatabase, QPixmap, QBrush, QImage, QPainter, QPixmap, QWindow
 from PyQt5.QtCore import QPropertyAnimation, QByteArray, Qt
@@ -10,7 +11,15 @@ from PyQt5.QtCore import QPropertyAnimation, QByteArray, Qt
 
 def resource_path(relative_path):
     """ Used for developing"""
-    return 'res/' + relative_path  # os.path.dirname(os.path.abspath(os.path.dirname(__file__)))+
+    return 'res/' + relative_path
+
+
+def getRequestsInfinite(url):
+    try:
+        response = request.urlopen(url)
+        return response
+    except:
+        return getRequestsInfinite(url)
 
 
 def printReInfo(infoList, cntTuple):
@@ -86,8 +95,8 @@ class Graphics():
 
         brush = QBrush(image)
         painter = QPainter(out_img)
-        painter.setBrush(brush)      # Use the image texture brush
-        painter.setPen(Qt.NoPen)     # Don't draw an outline  # Use AA
+        painter.setBrush(brush)
+        painter.setPen(Qt.NoPen)
 
         painter.drawRoundedRect(0, 0,
                                 image.width(), image.height(),
@@ -101,7 +110,7 @@ class Graphics():
         pm = QPixmap.fromImage(out_img)
         pm.setDevicePixelRatio(pr)
 
-        pm = pm.scaled(QWindow().devicePixelRatio() * 201, QWindow().devicePixelRatio() * 150,
+        pm = pm.scaled(QWindow().devicePixelRatio() * 201, QWindow().devicePixelRatio() * 145,
                        Qt.KeepAspectRatio, Qt.SmoothTransformation)
         return pm
 

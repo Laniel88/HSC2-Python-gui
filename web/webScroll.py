@@ -1,6 +1,7 @@
 import time
+from urllib import response
 import requests
-
+import random
 from bs4 import BeautifulSoup
 from multiprocessing import Pool, Manager
 
@@ -10,12 +11,19 @@ def getReSoup(reNum):
     reURL = ['re1', 're2', 're4']
 
     url = baseURL + reURL[reNum]
-
     # get soup
-    response = requests.get(url)
+
+    def getRequest():
+        response = requests.get(url, headers={'User-Agent': 'Custom'})
+        if response.status_code == 404:
+            return getRequest()
+        else:
+            return response
+
+    response = getRequest()
+    print(response)
     html = response.text
     soup = BeautifulSoup(html, 'html.parser')
-
     return soup
 
 
@@ -47,9 +55,12 @@ def getReList(reNum):
         tempList.append(tag)
 
         return tempList
+    foodBoxList = getReSoup(reNum) \
+        .find('div', class_='foodView-view') \
+        .find("div", class_='box tab-box-wrap tab-dth1 tab-lg', id='_foodView_WAR_foodportlet_tab_1') \
+        .find("div", class_='tab-pane active', id='messhall1') \
+        .find_all('div', class_='in-box')
 
-    foodBoxList = getReSoup(reNum).find("div", class_='box tab-box-wrap tab-dth1 tab-lg', id='_foodView_WAR_foodportlet_tab_1') \
-        .find("div", class_='tab-pane active', id='messhall1').find_all('div', class_='in-box')
     reList = []
 
     for box in foodBoxList:
@@ -61,25 +72,32 @@ def getReList(reNum):
     return reList
 
 
-def getAllreList(process=4):
-    try:
-        finalReList = Manager().list()
-        start_time = time.time()
-        pool = Pool(processes=process)
-        finalReList.append(pool.map(getReList, [0, 1, 2]))
-        pool.close()
-        pool.join()
+def getAllreList(process=1):
+    # try:
+    finalReList = Manager().list()
+    start_time = time.time()
+    pool = Pool(processes=process)
 
-        seq = time.time() - start_time
+    # #multiprocessing
+    finalReList.append(pool.map(getReList, [0, 1, 2]))
 
-        finalReList = finalReList[0]
+    # # Sequential crawling
+    # finalReList.append(getReList(0))
+    # finalReList.append(getReList(1))
+    # finalReList.append(getReList(2))
+    pool.close()
+    pool.join()
 
-        re0Num = len(finalReList[0])
-        re1Num = len(finalReList[1])
-        re2Num = len(finalReList[2])
+    seq = time.time() - start_time
 
-        print("[log.d] web loaded with time : {}".format(seq))
-        return (finalReList, (re0Num, re1Num, re2Num))
-        # return ([[['https://www.hanyang.ac.kr/web/www/re2?p_p_id=foodView_WAR_foodportlet&p_p_lifecycle=2&p_p_state=normal&p_p_mode=view&p_p_cacheability=cacheLevelPage&p_p_col_id=column-1&p_p_col_pos=1&p_p_col_count=2&_foodView_WAR_foodportlet_fileId=898008&_foodView_WAR_foodportlet_cmd=download&_foodView_WAR_foodportlet_sFoodDateYear=2022&_foodView_WAR_foodportlet_sFoodDateMonth=7&_foodView_WAR_foodportlet_action=view&_foodView_WAR_foodportlet_sFoodDateDay=11', ['[Pangeos]', '오므라이스', '코코넛새우가스', '데리야키볶음우동'], '4000₩']], [], []], (1, 0, 0))
-    except Exception as e:
-        return ('WEB ERROR', str(e))
+    finalReList = finalReList[0]
+
+    re0Num = len(finalReList[0])
+    re1Num = len(finalReList[1])
+    re2Num = len(finalReList[2])
+
+    print("[log.d] web loaded with time : {}".format(seq))
+    return (finalReList, (re0Num, re1Num, re2Num))
+
+    # except Exception as e:
+    #     return ('WEB ERROR', str(e))
