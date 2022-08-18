@@ -6,11 +6,10 @@ from PyQt5.QtGui import *  # [Qpixmap] included
 from PyQt5.QtCore import *
 from PyQt5 import uic, QtTest
 
-sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
+from web import getAllreList
+from component import Graphics, Font, resource_path, exitMsgBox
+from component import MainGroupClass
 
-from setup import *
-from gui.mainGroup import MainGroupClass
-from web.webScroll import getAllreList
 
 form_class_main = uic.loadUiType(resource_path("layouts/mainWin.ui"))[0]
 
@@ -47,6 +46,7 @@ class MainWin(QMainWindow, Graphics, Font, MainGroupClass, form_class_main):
         self.setupUi(self)
         self.initUI()
         self.initWidget()
+        self.hideAll()
 
         self.app = Qapp
 
@@ -77,6 +77,9 @@ class MainWin(QMainWindow, Graphics, Font, MainGroupClass, form_class_main):
         self.buttonB.clicked.connect(self.loadmainB)
         self.buttonC.clicked.connect(self.loadmainC)
         self.refreshButton.clicked.connect(self.refreshMain)
+
+        self.refreshLabel.setFont(
+            self.addFontWithPixel(14, 'Noto Sans KR', True))
 
     # Set text for timeLabel
     def loadTimeLabel(self):
@@ -109,21 +112,21 @@ class MainWin(QMainWindow, Graphics, Font, MainGroupClass, form_class_main):
 
     def nonDataLoad(self):
         self.menuBarSettings()
-        self.show()
         self.mainLoadAnimation()
+        self.autoLoad()
+        self.show()
 
     def loadData(self):
-        printReInfo(self.reList, self.reNum)
-        self.menuBarSettings()
-        self.mainLoadAnimation()
-        self.show()
-
-    def nonBusiness(self):
-        printReInfo(self.reList, self.reNum)
         self.menuBarSettings()
         self.mainLoadAnimation()
         self.show()
         self.autoLoad()
+
+    def nonBusiness(self):
+        self.menuBarSettings()
+        self.mainLoadAnimation()
+        self.autoLoad()
+        self.show()
     ## <-----------------------          ------------------------> ##
 
     def autoLoad(self):
@@ -176,6 +179,7 @@ class MainWin(QMainWindow, Graphics, Font, MainGroupClass, form_class_main):
             self.emptyMain()
 
     def refreshMain(self):
+        os.environ["QT_SCALE_FACTOR"] = "2"
         self.unableButtons()
         self.fade(self.mainGroup, 300)
         QtTest.QTest.qWait(300)
@@ -207,8 +211,6 @@ class MainWin(QMainWindow, Graphics, Font, MainGroupClass, form_class_main):
 
     def emptyMain(self):
         self.setImg('img/xmark.png', self.refreshGif, 70)
-        self.refreshLabel.setFont(
-            self.addFontWithPixel(14, 'Noto Sans KR', True))
         self.refreshLabel.setText('Nothing to Load')
         self.refreshGif.show()
         self.refreshLabel.show()

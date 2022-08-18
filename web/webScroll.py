@@ -1,8 +1,9 @@
 import time
 import requests
-
+from urllib import request
 from bs4 import BeautifulSoup
 from multiprocessing import Pool, Manager
+from component import resource_path
 
 
 def getReSoup(reNum):
@@ -10,23 +11,45 @@ def getReSoup(reNum):
     reURL = ['re1', 're2', 're4']
 
     url = baseURL + reURL[reNum]
-
     # get soup
-    response = requests.get(url)
+
+    def getRequest(cnt=0):
+        cnt += 1
+        # get from user_agent.txt
+        response = requests.get(url, headers={'User-Agent': 'Custom'})
+        if response.status_code == 404:
+            return getRequest(cnt)
+        else:
+            return response, cnt
+
+    response, cnt = getRequest()
+    print('{} >> try : {}'.format(response, cnt))
     html = response.text
     soup = BeautifulSoup(html, 'html.parser')
-
     return soup
+
+
+def getRequestsInfinite(url, cnt=0):
+    cnt += 1
+    try:
+        response = request.urlopen(url)
+        return response, cnt
+    except:
+        return getRequestsInfinite(url, cnt)
 
 
 def getReList(reNum):
 
     def heAppend(soup, tag):
-        def imgURL(URL):
+        def readImgURL(URL):
             if URL == '/html-repositories/images/custom/food/no-img.jpg':
-                return 'https://www.hanyang.ac.kr/html-repositories/images/custom/food/no-img.jpg'
+                img = open(resource_path('img/noImage.jpeg'), 'rb').read()
+                return img
             else:
-                return URL
+                img, cnt = getRequestsInfinite(URL)
+                print('img req try : {}'.format(cnt))
+                img = img.read()
+                return img
 
         def menuToList(menuOriginStr):
             try:
@@ -41,15 +64,18 @@ def getReList(reNum):
                 return [False] + menuOriginStr.split(', ')
 
         tempList = []
-        tempList.append(imgURL(soup.find('img').get('src')))
+        tempList.append(readImgURL(soup.find('img').get('src')))
         tempList.append(menuToList(soup.find('img').get('alt')))
         tempList.append(soup.find('p', class_='price').get_text())
         tempList.append(tag)
 
         return tempList
+    foodBoxList = getReSoup(reNum) \
+        .find('div', class_='foodView-view') \
+        .find("div", class_='box tab-box-wrap tab-dth1 tab-lg', id='_foodView_WAR_foodportlet_tab_1') \
+        .find("div", class_='tab-pane active', id='messhall1') \
+        .find_all('div', class_='in-box')
 
-    foodBoxList = getReSoup(reNum).find("div", class_='box tab-box-wrap tab-dth1 tab-lg', id='_foodView_WAR_foodportlet_tab_1') \
-        .find("div", class_='tab-pane active', id='messhall1').find_all('div', class_='in-box')
     reList = []
 
     for box in foodBoxList:
@@ -61,17 +87,25 @@ def getReList(reNum):
     return reList
 
 
-def getAllreList(process=4):
+def getAllreList(process=5):
     try:
         finalReList = Manager().list()
         start_time = time.time()
         pool = Pool(processes=process)
+
+        # multiprocessing
         finalReList.append(pool.map(getReList, [0, 1, 2]))
+
+        # # Sequential crawling
+        # finalReList.append(getReList(0))
+        # finalReList.append(getReList(1))
+        # finalReList.append(getReList(2))
         pool.close()
         pool.join()
 
         seq = time.time() - start_time
 
+        # unwraping list (only when multiprocessing is used)
         finalReList = finalReList[0]
 
         re0Num = len(finalReList[0])
@@ -80,6 +114,6 @@ def getAllreList(process=4):
 
         print("[log.d] web loaded with time : {}".format(seq))
         return (finalReList, (re0Num, re1Num, re2Num))
-        # return ([[['https://www.hanyang.ac.kr/web/www/re2?p_p_id=foodView_WAR_foodportlet&p_p_lifecycle=2&p_p_state=normal&p_p_mode=view&p_p_cacheability=cacheLevelPage&p_p_col_id=column-1&p_p_col_pos=1&p_p_col_count=2&_foodView_WAR_foodportlet_fileId=898008&_foodView_WAR_foodportlet_cmd=download&_foodView_WAR_foodportlet_sFoodDateYear=2022&_foodView_WAR_foodportlet_sFoodDateMonth=7&_foodView_WAR_foodportlet_action=view&_foodView_WAR_foodportlet_sFoodDateDay=11', ['[Pangeos]', '오므라이스', '코코넛새우가스', '데리야키볶음우동'], '4000₩']], [], []], (1, 0, 0))
+
     except Exception as e:
         return ('WEB ERROR', str(e))
