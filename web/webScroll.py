@@ -1,9 +1,9 @@
 import time
-from urllib import response
 import requests
-import random
+from urllib import request
 from bs4 import BeautifulSoup
 from multiprocessing import Pool, Manager
+from component import resource_path
 
 
 def getReSoup(reNum):
@@ -13,28 +13,43 @@ def getReSoup(reNum):
     url = baseURL + reURL[reNum]
     # get soup
 
-    def getRequest():
+    def getRequest(cnt=0):
+        cnt += 1
+        # get from user_agent.txt
         response = requests.get(url, headers={'User-Agent': 'Custom'})
         if response.status_code == 404:
-            return getRequest()
+            return getRequest(cnt)
         else:
-            return response
+            return response, cnt
 
-    response = getRequest()
-    print(response)
+    response, cnt = getRequest()
+    print('{} >> try : {}'.format(response, cnt))
     html = response.text
     soup = BeautifulSoup(html, 'html.parser')
     return soup
 
 
+def getRequestsInfinite(url, cnt=0):
+    cnt += 1
+    try:
+        response = request.urlopen(url)
+        return response, cnt
+    except:
+        return getRequestsInfinite(url, cnt)
+
+
 def getReList(reNum):
 
     def heAppend(soup, tag):
-        def imgURL(URL):
+        def readImgURL(URL):
             if URL == '/html-repositories/images/custom/food/no-img.jpg':
-                return 'https://www.hanyang.ac.kr/html-repositories/images/custom/food/no-img.jpg'
+                img = open(resource_path('img/noImage.jpeg'), 'rb').read()
+                return img
             else:
-                return URL
+                img, cnt = getRequestsInfinite(URL)
+                print('img req try : {}'.format(cnt))
+                img = img.read()
+                return img
 
         def menuToList(menuOriginStr):
             try:
@@ -49,7 +64,7 @@ def getReList(reNum):
                 return [False] + menuOriginStr.split(', ')
 
         tempList = []
-        tempList.append(imgURL(soup.find('img').get('src')))
+        tempList.append(readImgURL(soup.find('img').get('src')))
         tempList.append(menuToList(soup.find('img').get('alt')))
         tempList.append(soup.find('p', class_='price').get_text())
         tempList.append(tag)
@@ -72,32 +87,33 @@ def getReList(reNum):
     return reList
 
 
-def getAllreList(process=1):
-    # try:
-    finalReList = Manager().list()
-    start_time = time.time()
-    pool = Pool(processes=process)
+def getAllreList(process=5):
+    try:
+        finalReList = Manager().list()
+        start_time = time.time()
+        pool = Pool(processes=process)
 
-    # #multiprocessing
-    finalReList.append(pool.map(getReList, [0, 1, 2]))
+        # multiprocessing
+        finalReList.append(pool.map(getReList, [0, 1, 2]))
 
-    # # Sequential crawling
-    # finalReList.append(getReList(0))
-    # finalReList.append(getReList(1))
-    # finalReList.append(getReList(2))
-    pool.close()
-    pool.join()
+        # # Sequential crawling
+        # finalReList.append(getReList(0))
+        # finalReList.append(getReList(1))
+        # finalReList.append(getReList(2))
+        pool.close()
+        pool.join()
 
-    seq = time.time() - start_time
+        seq = time.time() - start_time
 
-    finalReList = finalReList[0]
+        # unwraping list (only when multiprocessing is used)
+        finalReList = finalReList[0]
 
-    re0Num = len(finalReList[0])
-    re1Num = len(finalReList[1])
-    re2Num = len(finalReList[2])
+        re0Num = len(finalReList[0])
+        re1Num = len(finalReList[1])
+        re2Num = len(finalReList[2])
 
-    print("[log.d] web loaded with time : {}".format(seq))
-    return (finalReList, (re0Num, re1Num, re2Num))
+        print("[log.d] web loaded with time : {}".format(seq))
+        return (finalReList, (re0Num, re1Num, re2Num))
 
-    # except Exception as e:
-    #     return ('WEB ERROR', str(e))
+    except Exception as e:
+        return ('WEB ERROR', str(e))

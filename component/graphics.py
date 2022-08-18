@@ -1,48 +1,7 @@
-from urllib import request
-from PyQt5.QtWidgets import QMessageBox, QGraphicsOpacityEffect
-from PyQt5.QtGui import QIcon, QMovie, QFont, QFontDatabase, QPixmap, QBrush, QImage, QPainter, QPixmap, QWindow
+from PyQt5.QtWidgets import QGraphicsOpacityEffect
+from PyQt5.QtGui import QMovie, QPixmap, QBrush, QImage, QPainter, QPixmap, QWindow
 from PyQt5.QtCore import QPropertyAnimation, QByteArray, Qt
-
-# def resource_path(relative_path):
-#     """ Get absolute path to resource, works for dev and for PyInstaller """
-#     base_path = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
-#     return os.path.join(base_path, relative_path)
-
-
-def resource_path(relative_path):
-    """ Used for developing"""
-    return 'res/' + relative_path
-
-
-def getRequestsInfinite(url):
-    try:
-        response = request.urlopen(url)
-        return response
-    except:
-        return getRequestsInfinite(url)
-
-
-def printReInfo(infoList, cntTuple):
-    print('printing reInfo : {}'.format(cntTuple))
-    for i in range(3):
-        for j in range(len(infoList[i])):
-            print(infoList[i][j])
-
-
-def exitMsgBox(title, text, buttons=QMessageBox.Yes | QMessageBox.Ignore):
-    msgBox = QMessageBox()
-    msgBox.setWindowTitle('HSC2 :: Exit')
-    msgBox.setWindowIcon(QIcon(resource_path('img/ICON.png')))
-    msgBox.setIcon(QMessageBox.Information)
-    msgBox.setText(title)
-    msgBox.setInformativeText(text)
-    msgBox.setStandardButtons(buttons)
-    msgBox.setDefaultButton(QMessageBox.Yes)
-    return msgBox.exec_()
-
-
-def setUpMenuGroup():
-    print("fill up!")
+from component import resource_path
 
 
 class Graphics():
@@ -83,16 +42,14 @@ class Graphics():
         qPixmapVar = qPixmapVar.scaledToWidth(Width)
         object.setPixmap(qPixmapVar)
 
-    def mask_image(self, imgdata, imgtype='png'):
-
+    def mask_image(self, imgdata, imgtype='jpeg'):
         image = QImage.fromData(imgdata, imgtype)
+        image.scaled(201, 145)
         image.convertToFormat(QImage.Format_ARGB32)
-
         out_img = QImage(image.width(), image.height(), QImage.Format_ARGB32)
         out_img.fill(Qt.transparent)
 
         radius = int((image.width() / 201) * 15)
-
         brush = QBrush(image)
         painter = QPainter(out_img)
         painter.setBrush(brush)
@@ -111,24 +68,5 @@ class Graphics():
         pm.setDevicePixelRatio(pr)
 
         pm = pm.scaled(QWindow().devicePixelRatio() * 201, QWindow().devicePixelRatio() * 145,
-                       Qt.KeepAspectRatio, Qt.SmoothTransformation)
+                       Qt.IgnoreAspectRatio, Qt.SmoothTransformation)
         return pm
-
-
-class Font():
-    def addFontDatabase(self):
-        QFontDatabase.addApplicationFont(resource_path('fonts/D2Coding.ttf'))
-        QFontDatabase.addApplicationFont(
-            resource_path('fonts/NotoSansKR-Bold.otf'))
-        QFontDatabase.addApplicationFont(
-            resource_path('fonts/NotoSansKR-Medium.otf'))
-        QFontDatabase.addApplicationFont(
-            resource_path('fonts/NotoSansKR-Regular.otf'))
-
-    def addFontWithPixel(self, pixel, font="D2Coding", bold=False):
-        font = QFont(font)
-        font.setPixelSize(pixel)
-        if bold == True:
-            font.setBold(True)
-        font.setHintingPreference(QFont.PreferNoHinting)
-        return font

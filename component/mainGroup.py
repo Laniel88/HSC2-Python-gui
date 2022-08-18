@@ -1,12 +1,6 @@
-import os
-import sys
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
-
-sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
-
-from setup import resource_path, getRequestsInfinite
 
 
 class MainGroupClass():
@@ -18,13 +12,7 @@ class MainGroupClass():
         listOfMenuGroup[0].show()
 
         # settings of menuImage
-        if menuData[0] == 'https://www.hanyang.ac.kr/html-repositories/images/custom/food/no-img.jpg':
-            img = open(resource_path('img/noImage.png'), 'rb').read()
-            listOfMenuGroup[3].setPixmap(self.mask_image(img, 'png'))
-        else:
-            #img = request.urlopen(menuData[0]).read()
-            img = getRequestsInfinite(menuData[0]).read()
-            listOfMenuGroup[3].setPixmap(self.mask_image(img, 'jpeg'))
+        listOfMenuGroup[3].setPixmap(self.mask_image(menuData[0], 'jpeg'))
 
         # set titleLabelA
         listOfMenuGroup[1].setText(self.reLabel[labelIndex])
@@ -70,7 +58,6 @@ class MainGroupClass():
                         reNum, menu, self.lomg_tup[cnt]
                     )
                     cnt += 1
-        return cnt
 
     # Initialize the widget and save it as a tuple in the instance attribute
     def initWidget(self):

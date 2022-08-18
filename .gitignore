@@ -1,2 +1,18 @@
+# compiled
 *.pyc
 __pycache__/
+
+# Pyinstaller
+build/
+dist/
+*.manifest
+*.spec
+*.exe
+
+# ETC
+user_agent.txt
+memo.txt
+res_flat/   
+
+# temp
+README.md

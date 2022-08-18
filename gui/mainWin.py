@@ -6,11 +6,10 @@ from PyQt5.QtGui import *  # [Qpixmap] included
 from PyQt5.QtCore import *
 from PyQt5 import uic, QtTest
 
-sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
+from web import getAllreList
+from component import Graphics, Font, resource_path, exitMsgBox
+from component import MainGroupClass
 
-from setup import *
-from gui.mainGroup import MainGroupClass
-from web.webScroll import getAllreList
 
 form_class_main = uic.loadUiType(resource_path("layouts/mainWin.ui"))[0]
 
@@ -118,14 +117,12 @@ class MainWin(QMainWindow, Graphics, Font, MainGroupClass, form_class_main):
         self.show()
 
     def loadData(self):
-        printReInfo(self.reList, self.reNum)
         self.menuBarSettings()
         self.mainLoadAnimation()
         self.show()
         self.autoLoad()
 
     def nonBusiness(self):
-        printReInfo(self.reList, self.reNum)
         self.menuBarSettings()
         self.mainLoadAnimation()
         self.autoLoad()
@@ -138,7 +135,7 @@ class MainWin(QMainWindow, Graphics, Font, MainGroupClass, form_class_main):
         if time < 14:
             self.loadmainA()
         elif time < 16:
-            self.loadmain()
+            self.loadmainB()
         else:
             self.loadmainC()
 

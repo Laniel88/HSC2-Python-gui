@@ -1451,6 +1451,9 @@ border: none;</string>
       <property name="text">
        <string/>
       </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
      </widget>
      <widget class="QLabel" name="titleLabel_7A">
       <property name="geometry">
@@ -1600,6 +1603,9 @@ border: none;</string>
       </property>
       <property name="text">
        <string/>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
       </property>
      </widget>
      <widget class="QLabel" name="titleLabel_8A">
