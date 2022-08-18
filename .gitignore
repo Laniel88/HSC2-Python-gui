@@ -3,16 +3,17 @@
 __pycache__/
 
 # Pyinstaller
+pyInstaller/
 build/
 dist/
+file_version_info.txt
 *.manifest
 *.spec
 *.exe
+*.pkg
 
 # ETC
+res_flat/
 user_agent.txt
 memo.txt
-res_flat/   
-
-# temp
-README.md
+show_example.gif
