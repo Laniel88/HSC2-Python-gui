@@ -1,13 +1,16 @@
+import os
 import sys
 
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
-from PyQt5 import uic
+from PyQt5 import uic, QtTest
 
-from web import getAllreList
-from component import resource_path, exitMsgBox
-from gui import MainWin
+sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
+
+from web.webScroll import getAllreList
+from setup import resource_path, exitMsgBox
+from gui.mainWin import MainWin
 
 form_class = uic.loadUiType(resource_path('layouts/loadWin.ui'))[0]
 

@@ -1,19 +1,2 @@
-# compiled
 *.pyc
 __pycache__/
-
-# Pyinstaller
-pyInstaller/
-build/
-dist/
-file_version_info.txt
-*.manifest
-*.spec
-*.exe
-*.pkg
-
-# ETC
-res_flat/
-user_agent.txt
-memo.txt
-show_example.gif
