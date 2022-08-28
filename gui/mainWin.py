@@ -73,11 +73,6 @@ class MainWin(QMainWindow, Graphics, Font, MainGroupClass, form_class_main):
 
         self.addFontDatabase()
 
-        self.buttonA.clicked.connect(self.loadmainA)
-        self.buttonB.clicked.connect(self.loadmainB)
-        self.buttonC.clicked.connect(self.loadmainC)
-        self.refreshButton.clicked.connect(self.refreshMain)
-
         self.refreshLabel.setFont(
             self.addFontWithPixel(14, 'Noto Sans KR', True))
 
@@ -113,7 +108,7 @@ class MainWin(QMainWindow, Graphics, Font, MainGroupClass, form_class_main):
     def nonDataLoad(self):
         self.menuBarSettings()
         self.mainLoadAnimation()
-        self.autoLoad()
+        self.emptyLoad()
         self.show()
 
     def loadData(self):
@@ -131,13 +126,33 @@ class MainWin(QMainWindow, Graphics, Font, MainGroupClass, form_class_main):
 
     def autoLoad(self):
         time = int(QTime.currentTime().toString('hh'))
-        # before 2 p.m '중식'
+        # initButton
+        self.initButtonTrue()
+
         if time < 14:
             self.loadmainA()
         elif time < 16:
             self.loadmainB()
         else:
             self.loadmainC()
+
+    def initButtonTrue(self):
+        self.buttonA.clicked.connect(self.loadmainA)
+        self.buttonB.clicked.connect(self.loadmainB)
+        self.buttonC.clicked.connect(self.loadmainC)
+        self.refreshButton.clicked.connect(self.refreshMain)
+
+    def initButtonFalse(self):
+        self.buttonA.clicked.connect(self.emptyMain)
+        self.buttonB.clicked.connect(self.emptyMain)
+        self.buttonC.clicked.connect(self.emptyMain)
+        self.refreshButton.clicked.connect(self.refreshMain)
+
+    def emptyLoad(self):
+        self.initButtonFalse()
+        self.buttonA.setStyleSheet(MainWin.button_unselected)
+        self.buttonB.setStyleSheet(MainWin.button_unselected)
+        self.buttonC.setStyleSheet(MainWin.button_unselected)
 
     def loadmainA(self):
         self.buttonA.setStyleSheet(MainWin.button_selected)
