@@ -18,4 +18,4 @@
 
 ## Sample
 
-<img src="https://user-images.githubusercontent.com/106924371/185410603-08f8d081-56cb-487f-826c-ed53e64bae39.gif">
+![sample](https://user-images.githubusercontent.com/106924371/187613571-121adb95-1f6b-4b8f-8001-e18734ba5ee6.gif)
