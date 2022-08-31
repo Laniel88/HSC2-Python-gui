@@ -13,10 +13,6 @@ from component import MainGroupClass
 
 form_class_main = uic.loadUiType(resource_path("layouts/mainWin.ui"))[0]
 
-ctx = ssl.SSLContext(protocol=ssl.PROTOCOL_SSLv23)
-ctx.set_ciphers('SSLv3')
-
-
 class MainWin(QMainWindow, Graphics, Font, MainGroupClass, form_class_main):
 
     button_unselected = """

@@ -1,3 +1,4 @@
+import ssl
 import time
 import requests
 from urllib import request
@@ -5,6 +6,9 @@ from bs4 import BeautifulSoup
 from multiprocessing import Pool, Manager
 from component import resource_path
 
+ctx = ssl.SSLContext(protocol=ssl.PROTOCOL_SSLv23)
+ctx.set_ciphers('SSLv3')
+context_ssl = ssl._create_unverified_context()
 
 def getReSoup(reNum):
     baseURL = 'https://www.hanyang.ac.kr/web/www/'
@@ -32,7 +36,7 @@ def getReSoup(reNum):
 def getRequestsInfinite(url, cnt=0):
     cnt += 1
     try:
-        response = request.urlopen(url)
+        response = request.urlopen(url,context= context_ssl)
         return response, cnt
     except:
         return getRequestsInfinite(url, cnt)
@@ -47,7 +51,7 @@ def getReList(reNum):
                 return img
             else:
                 img, cnt = getRequestsInfinite(URL)
-                print('img req try : {}'.format(cnt))
+                print('Image request has occurred - attempts : {} tries'.format(cnt))
                 img = img.read()
                 return img
 
@@ -112,8 +116,11 @@ def getAllreList(process=5):
         re1Num = len(finalReList[1])
         re2Num = len(finalReList[2])
 
-        print("[log.d] web loaded with time : {}".format(seq))
+        print("All data loaded successfully in : {} sec".format(round(seq,3)))
         return (finalReList, (re0Num, re1Num, re2Num))
+
+    except RecursionError:
+        return ('WEB ERROR', 'Continuous Web Call Error')
 
     except Exception as e:
         return ('WEB ERROR', str(e))
