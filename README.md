@@ -16,5 +16,3 @@
 | ------- | ------- | ---- | ---- |
 
 ## Sample
-
-<img src="https://user-images.githubusercontent.com/106924371/185410603-08f8d081-56cb-487f-826c-ed53e64bae39.gif">

@@ -88,7 +88,7 @@ class MainWin(QMainWindow, Graphics, Font, MainGroupClass, form_class_main):
         )
 
         self.timeLabel_Time.setText(
-            QTime.currentTime().toString(Qt.DefaultLocaleLongDate)
+            QTime.currentTime().toString('AP hh:mm:ss')
         )
 
     # Exit unconditionally if unKnown Error accured
@@ -99,7 +99,7 @@ class MainWin(QMainWindow, Graphics, Font, MainGroupClass, form_class_main):
     # Check if the received data is normal
     def checkLoadData(self):
         # If there is no data to load (sunday, failed to load data)
-        if (self.reList, self.reNum) == (False, False):
+        if (self.reList, self.reNum) == (False, (0, 0, 0)):
             self.nonDataLoad()
         # If each restaurant has 'non-business' data (holiday)
         elif self.reNum == (1, 1, 1) and self.reList[0][0][0] == 'https://www.hanyang.ac.kr/html-repositories/images/custom/food/no-img.jpg':
@@ -113,8 +113,8 @@ class MainWin(QMainWindow, Graphics, Font, MainGroupClass, form_class_main):
     def nonDataLoad(self):
         self.menuBarSettings()
         self.mainLoadAnimation()
-        self.autoLoad()
         self.show()
+        self.autoLoad()
 
     def loadData(self):
         self.menuBarSettings()

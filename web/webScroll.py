@@ -1,3 +1,4 @@
+import ssl
 import time
 import requests
 from urllib import request
@@ -5,6 +6,22 @@ from bs4 import BeautifulSoup
 from multiprocessing import Pool, Manager
 from component import resource_path
 
+
+ctx = ssl.SSLContext(protocol=ssl.PROTOCOL_SSLv23)
+ctx.set_ciphers('SSLv3')
+
+context_ssl = ssl._create_unverified_context()
+
+
+def getRequestsInfinite(url, cnt=0):
+    cnt += 1
+    try:
+        response = request.urlopen(url,context = context_ssl)
+        return response, cnt
+    except:
+        return getRequestsInfinite(url, cnt)
+
+##================================================================+##
 
 def getReSoup(reNum):
     baseURL = 'https://www.hanyang.ac.kr/web/www/'
@@ -29,14 +46,6 @@ def getReSoup(reNum):
     return soup
 
 
-def getRequestsInfinite(url, cnt=0):
-    cnt += 1
-    try:
-        response = request.urlopen(url)
-        return response, cnt
-    except:
-        return getRequestsInfinite(url, cnt)
-
 
 def getReList(reNum):
 
@@ -47,7 +56,7 @@ def getReList(reNum):
                 return img
             else:
                 img, cnt = getRequestsInfinite(URL)
-                print('img req try : {}'.format(cnt))
+                print('Image request has occurred - attempts : {} tries'.format(cnt))
                 img = img.read()
                 return img
 
@@ -70,6 +79,7 @@ def getReList(reNum):
         tempList.append(tag)
 
         return tempList
+    
     foodBoxList = getReSoup(reNum) \
         .find('div', class_='foodView-view') \
         .find("div", class_='box tab-box-wrap tab-dth1 tab-lg', id='_foodView_WAR_foodportlet_tab_1') \
@@ -112,7 +122,7 @@ def getAllreList(process=5):
         re1Num = len(finalReList[1])
         re2Num = len(finalReList[2])
 
-        print("[log.d] web loaded with time : {}".format(seq))
+        print("All data loaded successfully in : {} sec".format(round(seq,3)))
         return (finalReList, (re0Num, re1Num, re2Num))
 
     except Exception as e:
