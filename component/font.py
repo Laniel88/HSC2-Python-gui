@@ -13,7 +13,7 @@ class Font():
 
     def addFontWithPixel(self, pixel, font="D2Coding", bold=False):
         font = QFont(font)
-        font.setPixelSize(pixel)
+        font.setPixelSize(int(pixel))
         if bold == True:
             font.setBold(True)
         font.setHintingPreference(QFont.PreferNoHinting)

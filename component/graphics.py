@@ -67,6 +67,6 @@ class Graphics():
         pm = QPixmap.fromImage(out_img)
         pm.setDevicePixelRatio(pr)
 
-        pm = pm.scaled(QWindow().devicePixelRatio() * 201, QWindow().devicePixelRatio() * 145,
+        pm = pm.scaled(int(QWindow().devicePixelRatio()) * 201, int(QWindow().devicePixelRatio()) * 145,
                        Qt.IgnoreAspectRatio, Qt.SmoothTransformation)
         return pm
