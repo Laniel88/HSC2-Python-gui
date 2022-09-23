@@ -1,10 +1,10 @@
 import os
 import ssl
 import sys
-from PyQt5.QtWidgets import *
-from PyQt5.QtGui import *  # [Qpixmap] included
-from PyQt5.QtCore import *
-from PyQt5 import uic, QtTest
+from PyQt6.QtWidgets import *
+from PyQt6.QtGui import *  # [Qpixmap] included
+from PyQt6.QtCore import *
+from PyQt6 import uic, QtTest
 
 from web import getAllreList
 from component import Graphics, Font, resource_path, exitMsgBox
@@ -67,7 +67,7 @@ class MainWin(QMainWindow, Graphics, Font, MainGroupClass, form_class_main):
 
         # set window center
         qr = self.frameGeometry()
-        cp = QDesktopWidget().availableGeometry().center()
+        cp = QGuiApplication.primaryScreen().availableGeometry().center()
         qr.moveCenter(cp)
         self.move(qr.topLeft())
 
@@ -93,7 +93,7 @@ class MainWin(QMainWindow, Graphics, Font, MainGroupClass, form_class_main):
 
     # Exit unconditionally if unKnown Error accured
     def errorExit(self, label="UNKNOWN ERROR"):
-        exitMsgBox('ERROR while loading Menu', label, QMessageBox.Yes)
+        exitMsgBox('ERROR while loading Menu', label, QDialogButtonBox.StandardButton.Yes)
         sys.exit(self.app.exit())
 
     # Check if the received data is normal
@@ -131,7 +131,6 @@ class MainWin(QMainWindow, Graphics, Font, MainGroupClass, form_class_main):
 
     def autoLoad(self):
         time = int(QTime.currentTime().toString('hh'))
-        # before 2 p.m '중식'
         if time < 14:
             self.loadmainA()
         elif time < 16:

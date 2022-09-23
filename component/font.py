@@ -1,4 +1,4 @@
-from PyQt5.QtGui import QFont, QFontDatabase
+from PyQt6.QtGui import QFont, QFontDatabase
 from component import resource_path
 
 
@@ -16,5 +16,5 @@ class Font():
         font.setPixelSize(int(pixel))
         if bold == True:
             font.setBold(True)
-        font.setHintingPreference(QFont.PreferNoHinting)
+        font.setHintingPreference(QFont.HintingPreference.PreferNoHinting)
         return font

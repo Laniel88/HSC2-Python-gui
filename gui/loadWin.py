@@ -1,9 +1,9 @@
 import sys
 
-from PyQt5.QtWidgets import *
-from PyQt5.QtGui import *
-from PyQt5.QtCore import *
-from PyQt5 import uic
+from PyQt6.QtWidgets import *
+from PyQt6.QtGui import *
+from PyQt6.QtCore import *
+from PyQt6 import uic
 
 from web import getAllreList
 from component import resource_path, exitMsgBox
@@ -37,14 +37,14 @@ class LoadWin(QMainWindow, form_class):
 
     def initUI(self):
         self.setupUi(self)
-        self.setWindowFlags(Qt.FramelessWindowHint)
+        self.setWindowFlags(Qt.WindowType.FramelessWindowHint)
         self.center()  # center arrangement
         self.resize(540, 400)  # size : 540 x 400
         self.setWindowIcon(QIcon(resource_path('img/ICON.png')))
 
     def center(self):
         qr = self.frameGeometry()
-        cp = QDesktopWidget().availableGeometry().center()
+        cp = QGuiApplication.primaryScreen().availableGeometry().center()
         qr.moveCenter(cp)
         self.move(qr.topLeft())
 
@@ -56,14 +56,14 @@ class LoadWin(QMainWindow, form_class):
 
     def loadGif(self):
         movie = QMovie(resource_path('img/s_loadGif.gif'), QByteArray(), self)
-        movie.setCacheMode(QMovie.CacheAll)
+        movie.setCacheMode(QMovie.CacheMode.CacheAll)
         movie.setScaledSize(QSize(40, 40))
         self.loadGif_s.setMovie(movie)
         movie.start()
 
     def exitLoad(self, title='Nothing to Load', text='All cafeteria is closed'):
         result = exitMsgBox(title, text)
-        if result == QMessageBox.Yes:
+        if result == QDialogButtonBox.StandardButton:
             print('yes')
             sys.exit(self.app.exit())
         else:
