@@ -1,6 +1,6 @@
-from PyQt5.QtWidgets import QGraphicsOpacityEffect
-from PyQt5.QtGui import QMovie, QPixmap, QBrush, QImage, QPainter, QPixmap, QWindow
-from PyQt5.QtCore import QPropertyAnimation, QByteArray, Qt
+from PyQt6.QtWidgets import QGraphicsOpacityEffect
+from PyQt6.QtGui import QMovie, QPixmap, QBrush, QImage, QPainter, QPixmap, QWindow
+from PyQt6.QtCore import QPropertyAnimation, QByteArray, Qt
 from component import resource_path
 
 
@@ -28,7 +28,7 @@ class Graphics():
 
     def gifStart(self, path, size, object):
         movie = QMovie(resource_path(path), QByteArray(), self)
-        movie.setCacheMode(QMovie.CacheAll)
+        movie.setCacheMode(QMovie.CacheMode.CacheAll)
         movie.setScaledSize(size)
         object.setMovie(movie)
         movie.start()
@@ -45,28 +45,28 @@ class Graphics():
     def mask_image(self, imgdata, imgtype='jpeg'):
         image = QImage.fromData(imgdata, imgtype)
         image.scaled(201, 145)
-        image.convertToFormat(QImage.Format_ARGB32)
-        out_img = QImage(image.width(), image.height(), QImage.Format_ARGB32)
-        out_img.fill(Qt.transparent)
+        image.convertToFormat(QImage.Format.Format_ARGB32)
+        out_img = QImage(image.width(), image.height(), QImage.Format.Format_ARGB32)
+        out_img.fill(Qt.GlobalColor.transparent)
 
         radius = int((image.width() / 201) * 15)
         brush = QBrush(image)
         painter = QPainter(out_img)
         painter.setBrush(brush)
-        painter.setPen(Qt.NoPen)
+        painter.setPen(Qt.PenStyle.NoPen)
 
         painter.drawRoundedRect(0, 0,
                                 image.width(), image.height(),
                                 radius, radius)
 
         painter.drawRect(0, radius, image.width(), image.height())
-        painter.setRenderHint(QPainter.Antialiasing, True)
+        painter.setRenderHint(QPainter.RenderHint.Antialiasing, True)
         painter.end()
 
         pr = QWindow().devicePixelRatio()
         pm = QPixmap.fromImage(out_img)
         pm.setDevicePixelRatio(pr)
 
-        pm = pm.scaled(QWindow().devicePixelRatio() * 201, QWindow().devicePixelRatio() * 145,
-                       Qt.IgnoreAspectRatio, Qt.SmoothTransformation)
+        pm = pm.scaled(int(QWindow().devicePixelRatio()) * 201, int(QWindow().devicePixelRatio()) * 145,
+                       Qt.AspectRatioMode.IgnoreAspectRatio, Qt.TransformationMode.SmoothTransformation)
         return pm

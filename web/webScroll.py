@@ -6,9 +6,22 @@ from bs4 import BeautifulSoup
 from multiprocessing import Pool, Manager
 from component import resource_path
 
+
 ctx = ssl.SSLContext(protocol=ssl.PROTOCOL_SSLv23)
 ctx.set_ciphers('SSLv3')
+
 context_ssl = ssl._create_unverified_context()
+
+
+def getRequestsInfinite(url, cnt=0):
+    cnt += 1
+    try:
+        response = request.urlopen(url,context = context_ssl)
+        return response, cnt
+    except:
+        return getRequestsInfinite(url, cnt)
+
+##================================================================+##
 
 def getReSoup(reNum):
     baseURL = 'https://www.hanyang.ac.kr/web/www/'
@@ -32,14 +45,6 @@ def getReSoup(reNum):
     soup = BeautifulSoup(html, 'html.parser')
     return soup
 
-
-def getRequestsInfinite(url, cnt=0):
-    cnt += 1
-    try:
-        response = request.urlopen(url,context= context_ssl)
-        return response, cnt
-    except:
-        return getRequestsInfinite(url, cnt)
 
 
 def getReList(reNum):
@@ -74,6 +79,7 @@ def getReList(reNum):
         tempList.append(tag)
 
         return tempList
+    
     foodBoxList = getReSoup(reNum) \
         .find('div', class_='foodView-view') \
         .find("div", class_='box tab-box-wrap tab-dth1 tab-lg', id='_foodView_WAR_foodportlet_tab_1') \
@@ -118,9 +124,6 @@ def getAllreList(process=5):
 
         print("All data loaded successfully in : {} sec".format(round(seq,3)))
         return (finalReList, (re0Num, re1Num, re2Num))
-
-    except RecursionError:
-        return ('WEB ERROR', 'Continuous Web Call Error')
 
     except Exception as e:
         return ('WEB ERROR', str(e))

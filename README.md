@@ -12,10 +12,7 @@
 
 ## Releases
 
-| release                                                         | version | date       | File |
-| --------------------------------------------------------------- | ------- | ---------- | ---- |
-| https://github.com/Laniel88/HSC2-Python-gui/releases/tag/v1.0.0 | v1.0.0  | 2022.08.19 | .exe |
+| release | version | date | File |
+| ------- | ------- | ---- | ---- |
 
 ## Sample
-
-![sample](https://user-images.githubusercontent.com/106924371/187613571-121adb95-1f6b-4b8f-8001-e18734ba5ee6.gif)

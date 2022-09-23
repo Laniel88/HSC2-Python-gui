@@ -1,6 +1,6 @@
-from PyQt5.QtWidgets import *
-from PyQt5.QtGui import *
-from PyQt5.QtCore import *
+from PyQt6.QtWidgets import *
+from PyQt6.QtGui import *
+from PyQt6.QtCore import *
 
 
 class MainGroupClass():
@@ -41,7 +41,7 @@ class MainGroupClass():
             menuText += menuData[1][i] + '\n'
         listOfMenuGroup[4].setText(menuText)
         listOfMenuGroup[4].setFont(
-            self.addFontWithPixel(12, 'Noto Sans KR Medium'))
+            self.addFontWithPixel(12, 'Noto Sans KR'))
 
         # load priceLabel
         listOfMenuGroup[5].setText(menuData[2])

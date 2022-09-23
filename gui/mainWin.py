@@ -1,10 +1,10 @@
 import os
 import ssl
 import sys
-from PyQt5.QtWidgets import *
-from PyQt5.QtGui import *  # [Qpixmap] included
-from PyQt5.QtCore import *
-from PyQt5 import uic, QtTest
+from PyQt6.QtWidgets import *
+from PyQt6.QtGui import *  # [Qpixmap] included
+from PyQt6.QtCore import *
+from PyQt6 import uic, QtTest
 
 from web import getAllreList
 from component import Graphics, Font, resource_path, exitMsgBox
@@ -12,6 +12,10 @@ from component import MainGroupClass
 
 
 form_class_main = uic.loadUiType(resource_path("layouts/mainWin.ui"))[0]
+
+ctx = ssl.SSLContext(protocol=ssl.PROTOCOL_SSLv23)
+ctx.set_ciphers('SSLv3')
+
 
 class MainWin(QMainWindow, Graphics, Font, MainGroupClass, form_class_main):
 
@@ -63,11 +67,16 @@ class MainWin(QMainWindow, Graphics, Font, MainGroupClass, form_class_main):
 
         # set window center
         qr = self.frameGeometry()
-        cp = QDesktopWidget().availableGeometry().center()
+        cp = QGuiApplication.primaryScreen().availableGeometry().center()
         qr.moveCenter(cp)
         self.move(qr.topLeft())
 
         self.addFontDatabase()
+
+        self.buttonA.clicked.connect(self.loadmainA)
+        self.buttonB.clicked.connect(self.loadmainB)
+        self.buttonC.clicked.connect(self.loadmainC)
+        self.refreshButton.clicked.connect(self.refreshMain)
 
         self.refreshLabel.setFont(
             self.addFontWithPixel(14, 'Noto Sans KR', True))
@@ -79,18 +88,18 @@ class MainWin(QMainWindow, Graphics, Font, MainGroupClass, form_class_main):
         )
 
         self.timeLabel_Time.setText(
-            QTime.currentTime().toString(Qt.DefaultLocaleLongDate)
+            QTime.currentTime().toString('AP hh:mm:ss')
         )
 
     # Exit unconditionally if unKnown Error accured
     def errorExit(self, label="UNKNOWN ERROR"):
-        exitMsgBox('ERROR while loading Menu', label, QMessageBox.Yes)
+        exitMsgBox('ERROR while loading Menu', label, QDialogButtonBox.StandardButton.Yes)
         sys.exit(self.app.exit())
 
     # Check if the received data is normal
     def checkLoadData(self):
         # If there is no data to load (sunday, failed to load data)
-        if (self.reList, self.reNum) == (False, False):
+        if (self.reList, self.reNum) == (False, (0, 0, 0)):
             self.nonDataLoad()
         # If each restaurant has 'non-business' data (holiday)
         elif self.reNum == (1, 1, 1) and self.reList[0][0][0] == 'https://www.hanyang.ac.kr/html-repositories/images/custom/food/no-img.jpg':
@@ -104,8 +113,8 @@ class MainWin(QMainWindow, Graphics, Font, MainGroupClass, form_class_main):
     def nonDataLoad(self):
         self.menuBarSettings()
         self.mainLoadAnimation()
-        self.emptyLoad()
         self.show()
+        self.autoLoad()
 
     def loadData(self):
         self.menuBarSettings()
@@ -122,33 +131,12 @@ class MainWin(QMainWindow, Graphics, Font, MainGroupClass, form_class_main):
 
     def autoLoad(self):
         time = int(QTime.currentTime().toString('hh'))
-        # initButton
-        self.initButtonTrue()
-
         if time < 14:
             self.loadmainA()
         elif time < 16:
             self.loadmainB()
         else:
             self.loadmainC()
-
-    def initButtonTrue(self):
-        self.buttonA.clicked.connect(self.loadmainA)
-        self.buttonB.clicked.connect(self.loadmainB)
-        self.buttonC.clicked.connect(self.loadmainC)
-        self.refreshButton.clicked.connect(self.refreshMain)
-
-    def initButtonFalse(self):
-        self.buttonA.clicked.connect(self.emptyMain)
-        self.buttonB.clicked.connect(self.emptyMain)
-        self.buttonC.clicked.connect(self.emptyMain)
-        self.refreshButton.clicked.connect(self.refreshMain)
-
-    def emptyLoad(self):
-        self.initButtonFalse()
-        self.buttonA.setStyleSheet(MainWin.button_unselected)
-        self.buttonB.setStyleSheet(MainWin.button_unselected)
-        self.buttonC.setStyleSheet(MainWin.button_unselected)
 
     def loadmainA(self):
         self.buttonA.setStyleSheet(MainWin.button_selected)
