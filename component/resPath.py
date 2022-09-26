@@ -17,4 +17,4 @@ import os
 
 def resource_path(relative_path):
     """ Used for developing"""
-    return os.path.dirname(os.path.abspath(os.path.dirname(__file__))) + '/res/' + relative_path
+    return os.path.dirname(os.path.abspath(os.path.dirname(__file__))) + '/assets/' + relative_path
